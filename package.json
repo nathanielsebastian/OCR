@@ -4,11 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "node_modules/.bin/browserify app.js > bundle.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tesseract.js": "^4.1.1"
+    "browserify": "^17.0.0",
+    "tesseract.js": "^4.1.1",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
   }
 }
