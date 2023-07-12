@@ -5,14 +5,21 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "node_modules/.bin/browserify app.js > bundle.js"
+    "bundle": "node_modules/.bin/browserify ./src/functions.js > ./dist/bundle.js",
+    "babelify": "node_modules/.bin/browserify ./src/functions.js > ./dist/bundle.js -t babelify"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "browserify": "^17.0.0",
+    "sharp": "^0.32.2",
     "tesseract.js": "^4.1.1",
     "webpack": "^5.88.1",
     "webpack-cli": "^5.1.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.8",
+    "@babel/preset-env": "^7.22.7",
+    "babelify": "^10.0.0"
   }
 }

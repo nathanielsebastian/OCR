@@ -1,5 +1,6 @@
 const { createWorker} = Tesseract;
 // const { createWorker } = require('tesseract.js');
+// import { createWorker } from 'tesseract.js';
 
 const progress = document.getElementById('progress')
 const textarea = document.getElementById('textarea')
@@ -7,6 +8,8 @@ const canvas = document.getElementById("cv1")
 const canvas2 = document.getElementById("cv2")
 const ctx = cv1.getContext("2d");
 const ctx2 = cv2.getContext("2d");
+
+var imagePassport = new MarvinImage(); 
 
 document.querySelector('input[type="file"]').onchange = function() {
     let img = this.files[0]
@@ -31,8 +34,33 @@ function drawImage(url) {
       ctx2.drawImage(image, 0, 0)
       const dataURL = canvas2.toDataURL('image/jpeg');
       detect(dataURL)
+
+      //setImgPassport(dataURL)
   }
 }
+
+// function setImgPassport(imgURL){
+//   // Load Passport image 
+//   imagePassport.load(imgURL, imagePassportLoaded); 
+// }
+
+// // Find Text regions in the passport image 
+// function imagePassportLoaded(){ 
+//   var segments = Marvin.findTextRegions(imagePassport, 40, 40, 50, 190); 
+//   drawSegments(segments, imagePassport); 
+//   imagePassport.draw(canvas2); 
+// } 
+
+// function drawSegments(segments, image){ 
+//   for(var i in segments){ 
+//       var seg = segments[i];
+//   // Skip segments that are too small
+//       if(seg.height >= 5){ 
+//           image.drawRect(seg.x1, seg.y1-5, seg.width, seg.height+10, 0xFFFF0000); 
+//           image.drawRect(seg.x1+1, seg.y1-4, seg.width-2, seg.height+8, 0xFFFF0000); 
+//       } 
+//   } 
+// }
 
 function detect(url){
   (async () => {
@@ -54,7 +82,7 @@ function detect(url){
 };
 
 function scanImg(src, lang){
-  ctx2.putImageData(preprocessImage(canvas2), 0, 0);
+ // ctx2.putImageData(preprocessImage(canvas2), 0, 0);
   (async () => {
     const worker = await createWorker({
       logger: (m) => {
@@ -73,6 +101,7 @@ function scanImg(src, lang){
 }
 
 function preprocessImage(canvas) {
+  let radius;
   const processedImageData = canvas.getContext('2d').getImageData(0,0,canvas.width, canvas.height);
   blurARGB(processedImageData.data, canvas, radius=1);
   dilate(processedImageData.data, canvas);
@@ -347,3 +376,10 @@ function dilate(pixels, canvas) {
  }
  setPixels(pixels, out);
 };
+
+// Find Text regions in the passport image 
+function imagePassportLoaded(){ 
+  var segments = Marvin.findTextRegions(imagePassport, 40, 40, 50, 190); 
+  drawSegments(segments, imagePassport); 
+  imagePassport.draw(canvas2); 
+} 
