@@ -35,86 +35,84 @@ function drawImage(url) {
       const dataURL = canvas2.toDataURL('image/jpeg');
 
       preprocessImage(canvas2);
-      scanImg(dataURL, 'eng+spa');
+      scanImg(dataURL, 'ces');
   }
 }
 
 function scanImg(src,lang){
-  Tesseract.recognize(
-    src, 
-    lang, {
-    tessedit_char_whitelist:
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<",
-    preserve_interword_spaces: "1",
-  }).then(({ data }) => {
-    const detectedText = data.text; // Teks yang terdeteksi oleh Tesseract.js
+  // Tesseract.recognize(
+  //   src, 
+  //   lang, {
+  //   tessedit_char_whitelist:
+  //     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<",
+  //   preserve_interword_spaces: "10",
+  // }).then(({ data }) => {
+  //   const detectedText = data.text; // Teks yang terdeteksi oleh Tesseract.js
+  //   console.log(data);
 
-    // Mengambil 2 baris terakhir
-    const lines = detectedText.split("\n");
-    const lastTwoLines = lines.slice(-4);
-    const mrz = lastTwoLines.slice (0, -2);
-    const mergedText = mrz.join("\n");
+  //   // Mengambil 2 baris terakhir
+  //   const lines = detectedText.split("\n");
+  //   const lastTwoLines = lines.slice(-3);
+  //   const mergedText = lastTwoLines.join("\n");
+
+  //   console.log(mergedText);
+
+  //   // Menggambar kotak merah di sekitar teks yang terdeteksi
+  //   const textRegions = data.words.map((word) => word.bbox);
+  //   ctx2.lineWidth = 2;
+  //   ctx2.strokeStyle = "red";
+  //   textRegions.forEach((region) => {
+  //     ctx2.beginPath();
+  //     ctx2.rect(
+  //       region.x0,
+  //       region.y0,
+  //       region.x1 - region.x0,
+  //       region.y1 - region.y0
+  //     );
+  //     ctx2.stroke();
+  //   });
+  // });
+
+  //use worker
+  (async () => {
+    const worker = await createWorker({
+      // logger: (m) => {
+      //   console.log(m);
+      // },
+    });
+    await worker.loadLanguage(lang); // 2
+    await worker.initialize(lang);
+    await worker.setParameters({
+      tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<",
+      preserve_interword_spaces: '1',
+    })
+    const {
+      data: { text, words },
+    } = await worker.recognize(src);
+    await worker.terminate();
+
+    const lines = text.split("\n");
+    const lastTwoLines = lines.slice(-3);
+    const mergedText = lastTwoLines.join("\n");
 
     console.log(mergedText);
 
-    // Menggambar kotak merah di sekitar teks yang terdeteksi
-    const textRegions = data.words.map((word) => word.bbox);
-    ctx2.lineWidth = 2;
-    ctx2.strokeStyle = "red";
-    textRegions.forEach((region) => {
-      ctx2.beginPath();
-      ctx2.rect(
-        region.x0,
-        region.y0,
-        region.x1 - region.x0,
-        region.y1 - region.y0
-      );
-      ctx2.stroke();
-    });
-    // console.log(textRegions)
-  });
+    const textRegions = words.map((word) => word.bbox);
+        ctx2.lineWidth = 2;
+        ctx2.strokeStyle = "red";
+        textRegions.forEach((region) => {
+          ctx2.beginPath();
+          ctx2.rect(
+            region.x0,
+            region.y0,
+            region.x1 - region.x0,
+            region.y1 - region.y0
+          );
+          ctx2.stroke();
+        });
 
-  // (async () => {
-  //   const worker = await createWorker({
-  //     // logger: (m) => {
-  //     //   console.log(m);
-  //     // },
-  //   });
-  //   await worker.loadLanguage(lang); // 2
-  //   await worker.initialize(lang);
-  //   await worker.setParameters({
-  //     tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<",
-  //     preserve_interword_spaces: '1',
-  //   })
-  //   const {
-  //     data: { text },
-  //   } = await worker.recognize(src);
-  //   await worker.terminate();
-
-  //   const lines = text.split("\n");
-  //   const lastTwoLines = lines.slice(-4);
-  //   const mrz = lastTwoLines.slice(0, -2);
-  //   const mergedText = lastTwoLines.join("\n");
-
-  //   console.log({data});
-
-  //   // const textRegions = lines.map((word) => word);
-  //   //     ctx2.lineWidth = 2;
-  //   //     ctx2.strokeStyle = "red";
-  //   //     textRegions.forEach((region) => {
-  //   //       ctx2.beginPath();
-  //   //       ctx2.rect(
-  //   //         region.x0,
-  //   //         region.y0,
-  //   //         region.x1 - region.x0,
-  //   //         region.y1 - region.y0
-  //   //       );
-  //   //       ctx2.stroke();
-  //   //     });
-
-  //   // console.log(textRegions);
-    
-  // })();
+    console.log(textRegions);
+  })();
 
 }
 
