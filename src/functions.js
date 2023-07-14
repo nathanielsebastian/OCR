@@ -98,20 +98,20 @@ function scanImg(src,lang){
     console.log(mergedText);
 
     const textRegions = words.map((word) => word.bbox);
-        ctx2.lineWidth = 2;
-        ctx2.strokeStyle = "red";
-        textRegions.forEach((region) => {
-          ctx2.beginPath();
-          ctx2.rect(
-            region.x0,
-            region.y0,
-            region.x1 - region.x0,
-            region.y1 - region.y0
-          );
-          ctx2.stroke();
-        });
+    ctx2.lineWidth = 2;
+    ctx2.strokeStyle = "red";
+    textRegions.forEach((region) => {
+      ctx2.beginPath();
+      ctx2.rect(
+        region.x0,
+        region.y0,
+        region.x1 - region.x0,
+        region.y1 - region.y0
+      );
+      ctx2.stroke();
+    });
 
-    console.log(textRegions);
+    textarea.innerHTML = text;
   })();
 
 }
