@@ -68,7 +68,7 @@
             Tesseract.recognize(canvas, "ces", {
               tessedit_char_whitelist:
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<",
-              preserve_interword_spaces: "10",
+              preserve_interword_spaces: "1",
             }).then(({ data }) => {
               const detectedText = data.text; // Teks yang terdeteksi oleh Tesseract.js
 
