@@ -1,4 +1,4 @@
-const { createWorker} = Tesseract;
+const { createWorker, PSM} = Tesseract;
 // const { createWorker } = require('tesseract.js');
 // import { createWorker } from 'tesseract.js';
 
@@ -35,11 +35,12 @@ function drawImage(url) {
       const dataURL = canvas2.toDataURL('image/jpeg');
 
       preprocessImage(canvas2);
-      scanImg(dataURL, 'ces');
+      scanImg(dataURL, 'eng+ces');
   }
 }
 
-function scanImg(src,lang){
+async function scanImg(src,lang){
+  const dtTxt = [];
   // Tesseract.recognize(
   //   src, 
   //   lang, {
@@ -74,17 +75,13 @@ function scanImg(src,lang){
   // });
 
   //use worker
-  (async () => {
-    const worker = await createWorker({
-      // logger: (m) => {
-      //   console.log(m);
-      // },
-    });
+
+    const worker = await createWorker({});
     await worker.loadLanguage(lang); // 2
     await worker.initialize(lang);
     await worker.setParameters({
       tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<",
-      preserve_interword_spaces: '1',
+      preserve_interword_spaces: '10',
     })
     const {
       data: { text, words },
@@ -94,8 +91,6 @@ function scanImg(src,lang){
     const lines = text.split("\n");
     const lastTwoLines = lines.slice(-3);
     const mergedText = lastTwoLines.join("\n");
-
-    console.log(mergedText);
 
     const textRegions = words.map((word) => word.bbox);
     ctx2.lineWidth = 2;
@@ -111,9 +106,13 @@ function scanImg(src,lang){
       ctx2.stroke();
     });
 
-    textarea.innerHTML = text;
-  })();
+    const textVal = words.map((word) => word.text);
+    textVal.forEach((txt) => {
+      dtTxt.push(txt)
+    });
 
+    textarea.innerHTML = text;
+    console.log(text);
 }
 
 function preprocessImage(canvas) {
